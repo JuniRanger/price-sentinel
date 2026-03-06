@@ -3,13 +3,9 @@ import { getAllProducts, updateProductPrice } from "../services/product.service"
 import { scrapeProduct } from "../services/scraper.service";
 import { sendPriceAlert } from "../services/notification.service";
 
-/**
- * Starts the price monitor cron job.
- * Runs every 30 minutes: fetches all products, scrapes each URL,
- * compares new price with stored price, logs drops, and updates the DB.
- */
 export const startPriceMonitorJob = (): void => {
-  cron.schedule("*/30 * * * *", async () => {
+  // Ejecuta cada 10 segundos
+  cron.schedule("*/160 * * * * *", async () => {
     console.log("[Cron] Running price monitor job");
 
     try {
@@ -31,16 +27,30 @@ export const startPriceMonitorJob = (): void => {
           const previousPrice = currentPrice ?? newPrice;
           const productName = scrapedName ?? name ?? `Product #${id}`;
 
-          if (currentPrice != null && newPrice < currentPrice) {
-            console.log(`PRICE DROP DETECTED for ${productName}`);
+          if (currentPrice == null) {
+            console.log(`Initial price stored for ${productName}: $${newPrice}`);
+          }
+
+          else if (newPrice < currentPrice) {
+            console.log(`El precio bajó para: ${productName}: ${currentPrice} → ${newPrice}`);
             await sendPriceAlert(email ?? "", productName, currentPrice, newPrice);
           }
 
+          else if (newPrice > currentPrice) {
+            console.log(`El precio subió para: ${productName}: ${currentPrice} → ${newPrice}`);
+          }
+
+          else {
+            console.log(`El precio no cambió para: ${productName}: $${newPrice}`);
+          }
+
           await updateProductPrice(id, newPrice, previousPrice, scrapedName);
+
         } catch (error) {
           console.error(`Failed to update product ID ${id}`, error);
         }
       }
+
     } catch (error) {
       console.error("[Cron] Failed to run price monitor job", error);
     }

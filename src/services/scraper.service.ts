@@ -12,11 +12,16 @@ const parsePrice = (rawText: string | undefined | null): number | null => {
   const cleaned = rawText
     .replace(/\s+/g, " ")
     .trim()
-    .replace(/[^0-9,.\-]/g, "");
+    .replace(/[^0-9.,\-]/g, "");
 
   if (!cleaned) return null;
 
-  const normalized = cleaned.replace(",", ".");
+  // Detect decimal format
+  const normalized =
+    cleaned.indexOf(",") > cleaned.indexOf(".")
+      ? cleaned.replace(/\./g, "").replace(",", ".")
+      : cleaned.replace(/,/g, "");
+
   const value = parseFloat(normalized);
 
   return Number.isFinite(value) ? value : null;
@@ -114,6 +119,16 @@ export const scrapeProduct = async (url: string): Promise<ScrapeResult> => {
 
   // 3) Fallback: common price selectors
   if (price == null) {
+    const metaPrice =
+    $('meta[property="product:price:amount"]').attr("content") ||
+    $('meta[name="price"]').attr("content") ||
+    $('meta[itemprop="price"]').attr("content");
+
+    const parsed = parsePrice(metaPrice);
+    if (parsed != null) {
+      price = parsed;
+    }
+    
     const priceSelectors = [
       ".price",
       ".product-price",
