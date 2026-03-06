@@ -1,0 +1,45 @@
+<section class="form-section">
+  <h1>Add Product to Monitor</h1>
+
+  <form action="/products" method="POST" class="form">
+    <div class="form-group">
+      <label for="url">Product URL</label>
+      <input type="url" id="url" name="url" required placeholder="https://example.com/product" />
+    </div>
+
+    <div class="form-group">
+      <label for="nameSelector">Name Selector (CSS)</label>
+      <input
+        type="text"
+        id="nameSelector"
+        name="nameSelector"
+        required
+        placeholder=".product-title"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="priceSelector">Price Selector (CSS)</label>
+      <input
+        type="text"
+        id="priceSelector"
+        name="priceSelector"
+        required
+        placeholder=".product-price"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email (optional)</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="you@example.com"
+      />
+    </div>
+
+    <button type="submit" class="btn">Save</button>
+  </form>
+</section>
+

@@ -1,0 +1,18 @@
+<article class="product-card">
+  <h2 class="product-name">{{name}}</h2>
+  <p class="product-url">
+    <a href="{{url}}" target="_blank" rel="noopener noreferrer">View product</a>
+  </p>
+  <p class="product-price">
+    Current price:
+    {{#if currentPrice}}
+      {{currentPrice}}
+    {{else}}
+      Not scraped yet
+    {{/if}}
+  </p>
+  <p class="product-status status-{{statusClass}}">
+    Status: {{status}}
+  </p>
+</article>
+

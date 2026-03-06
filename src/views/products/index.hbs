@@ -1,0 +1,23 @@
+<section>
+  <header class="section-header">
+    <h1>Monitored Products</h1>
+    <a class="btn" href="/products/create">Add Product</a>
+  </header>
+
+  {{#if products.length}}
+    <div class="product-grid">
+      {{#each products}}
+        {{!-- Provide a CSS-friendly status class --}}
+        {{#with this}}
+          {{> productCard statusClass=(lowercase status) }}
+        {{/with}}
+      {{/each}}
+    </div>
+  {{else}}
+    <p>No products are being monitored yet.</p>
+    <p>
+      <a class="btn" href="/products/create">Add your first product</a>
+    </p>
+  {{/if}}
+</section>
+
