@@ -12,8 +12,6 @@ const CREATE_PRODUCTS_TABLE = `
   CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     url TEXT NOT NULL,
-    nameSelector TEXT NOT NULL,
-    priceSelector TEXT NOT NULL,
     name TEXT,
     currentPrice REAL,
     lastPrice REAL,

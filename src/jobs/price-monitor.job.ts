@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import { getAllProducts, updateProductPrice } from "../services/product.service";
 import { scrapeProduct } from "../services/scraper.service";
-import { sendPriceDropNotification } from "../services/notification.service";
+import { sendPriceAlert } from "../services/notification.service";
 
 /**
  * Starts the price monitor cron job.
@@ -16,16 +16,12 @@ export const startPriceMonitorJob = (): void => {
       const products = await getAllProducts();
 
       for (const product of products) {
-        const { id, url, nameSelector, priceSelector, currentPrice, email, name } = product;
+        const { id, url, currentPrice, email, name } = product;
 
         if (!id) continue;
 
         try {
-          const { name: scrapedName, price: newPrice } = await scrapeProduct(
-            url,
-            nameSelector,
-            priceSelector,
-          );
+          const { name: scrapedName, price: newPrice } = await scrapeProduct(url);
 
           if (newPrice == null) {
             console.warn(`Unable to parse price for product ID ${id}`);
@@ -37,7 +33,7 @@ export const startPriceMonitorJob = (): void => {
 
           if (currentPrice != null && newPrice < currentPrice) {
             console.log(`PRICE DROP DETECTED for ${productName}`);
-            await sendPriceDropNotification(email ?? undefined, productName, currentPrice, newPrice);
+            await sendPriceAlert(email ?? "", productName, currentPrice, newPrice);
           }
 
           await updateProductPrice(id, newPrice, previousPrice, scrapedName);

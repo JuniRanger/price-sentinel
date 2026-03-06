@@ -1,7 +1,12 @@
 <section>
   <header class="section-header">
     <h1>Monitored Products</h1>
-    <a class="btn" href="/products/create">Add Product</a>
+    <div class="section-actions">
+      <form action="/products/refresh" method="POST" class="inline-form">
+        <button type="submit" class="btn btn-secondary">Refresh prices</button>
+      </form>
+      <a class="btn" href="/products/create">Add Product</a>
+    </div>
   </header>
 
   {{#if products.length}}
@@ -12,6 +17,20 @@
           {{> productCard statusClass=(lowercase status) }}
         {{/with}}
       {{/each}}
+    </div>
+
+    <div class="pagination">
+      <span class="pagination-info">
+        Page {{currentPage}} of {{totalPages}}
+      </span>
+      <div class="pagination-links">
+        {{#if hasPrev}}
+          <a href="/products?page={{prevPage}}" class="btn btn-secondary btn-sm">Previous</a>
+        {{/if}}
+        {{#if hasNext}}
+          <a href="/products?page={{nextPage}}" class="btn btn-secondary btn-sm">Next</a>
+        {{/if}}
+      </div>
     </div>
   {{else}}
     <p>No products are being monitored yet.</p>

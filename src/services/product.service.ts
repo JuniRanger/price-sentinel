@@ -1,19 +1,34 @@
 import { initDB } from "../config/db";
 import { Product } from "../models/product.model";
+import { scrapeProduct } from "./scraper.service";
 
-export type CreateProductInput = Pick<Product, "url" | "nameSelector" | "priceSelector" | "email">;
+export interface CreateProductInput {
+  url: string;
+  email?: string | null;
+}
 
 export const createProduct = async (input: CreateProductInput): Promise<void> => {
   const db = await initDB();
 
-  const { url, nameSelector, priceSelector, email } = input;
+  const { url, email } = input;
+
+  let name: string | null = null;
+  let currentPrice: number | null = null;
+
+  try {
+    const scraped = await scrapeProduct(url);
+    name = scraped.name;
+    currentPrice = scraped.price;
+  } catch (error) {
+    console.error("Failed to scrape product on create", error);
+  }
 
   await db.run(
     `
-      INSERT INTO products (url, nameSelector, priceSelector, email)
+      INSERT INTO products (url, name, currentPrice, email)
       VALUES (?, ?, ?, ?)
     `,
-    [url, nameSelector, priceSelector, email ?? null],
+    [url, name, currentPrice, email ?? null],
   );
 };
 
@@ -24,8 +39,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
     SELECT
       id,
       url,
-      nameSelector,
-      priceSelector,
       name,
       currentPrice,
       lastPrice,
@@ -56,6 +69,18 @@ export const updateProductPrice = async (
       WHERE id = ?
     `,
     [newPrice, lastPrice, name ?? null, id],
+  );
+};
+
+export const deleteProductById = async (id: number): Promise<void> => {
+  const db = await initDB();
+
+  await db.run(
+    `
+      DELETE FROM products
+      WHERE id = ?
+    `,
+    [id],
   );
 };
 

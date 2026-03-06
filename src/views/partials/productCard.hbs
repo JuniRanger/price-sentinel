@@ -14,5 +14,10 @@
   <p class="product-status status-{{statusClass}}">
     Status: {{status}}
   </p>
+  <div class="product-actions">
+    <form action="/products/{{id}}/delete" method="POST" class="inline-form">
+      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    </form>
+  </div>
 </article>
 
