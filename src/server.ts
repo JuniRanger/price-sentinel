@@ -1,3 +1,4 @@
+import "dotenv/config";
 import app from "./app";
 import { initDB } from "./config/db";
 import { startPriceMonitorJob } from "./jobs/price-monitor.job";
